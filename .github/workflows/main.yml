@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -41,7 +41,7 @@ jobs:
       - name: Build project
         run: ./gradlew build
 
-      - name: Run API Tests (only @api tag)
+      - name: Run API Tests
         run: ./gradlew clean test -Dcucumber.filter.tags="@api" --stacktrace --info
 
       - name: Upload API Test Reports
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -74,7 +74,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Chrome and ChromeDriver
+      # Setup Chrome dan ChromeDriver untuk Web Tests
+      - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1.7.3
         with:
           chrome-version: stable
@@ -94,7 +95,7 @@ jobs:
       - name: Build project
         run: ./gradlew build
 
-      - name: Run Web Tests (only @web tag)
+      - name: Run Web Tests
         run: xvfb-run ./gradlew clean test -Dcucumber.filter.tags="@web" --stacktrace --info
 
       - name: Upload Web Test Reports
