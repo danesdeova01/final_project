@@ -5,6 +5,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.*;
 import web.pages.LoginPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -17,18 +18,35 @@ public class LoginWebSteps {
     private LoginPage loginPage;
     private WebDriverWait wait;
 
-    @Before
+    // Hook setup WebDriver berlaku utk scenario bertag @web OR @api
+    @Before("@web or @api")
     public void setup() {
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments(
+                "--headless",
+                "--disable-gpu",
+                "--window-size=1920,1080",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-extensions",
+                "--ignore-certificate-errors"
+        );
+
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+
         loginPage = new LoginPage(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    @After
+    // Hook teardown juga berlaku untuk scenario bertag @web OR @api
+    @After("@web or @api")
     public void teardown() {
-        if(driver != null) driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Given("I am on the login page")
@@ -86,10 +104,7 @@ public class LoginWebSteps {
 
     @Then("I should be redirected to the login page")
     public void i_should_be_redirected_to_the_login_page() {
-        // Revisi tunggu elemen dengan locator baru untuk menghindari stale element
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-name")));
-
-        // Verifikasi URL login
         assertTrue(driver.getCurrentUrl().contains("saucedemo.com"));
     }
 }
