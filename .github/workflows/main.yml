@@ -17,15 +17,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: temurin
+          distribution: 'temurin'
 
-      - name: Cache Gradle Packages
+      - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
           path: |
@@ -40,10 +41,10 @@ jobs:
       - name: Build project
         run: ./gradlew build
 
-      - name: Run API Tests
+      - name: Run API Tests (only @api tag)
         run: ./gradlew clean test -Dcucumber.filter.tags="@api" --stacktrace --info
 
-      - name: Archive API Test Reports
+      - name: Upload API Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -64,21 +65,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: temurin
+          distribution: 'temurin'
 
-      # PENTING: Setup Chrome hanya di web-tests job
-      - name: Setup Chrome
+      - name: Setup Chrome and ChromeDriver
         uses: browser-actions/setup-chrome@v1.7.3
         with:
           chrome-version: stable
 
-      - name: Cache Gradle Packages
+      - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
           path: |
@@ -93,10 +94,10 @@ jobs:
       - name: Build project
         run: ./gradlew build
 
-      - name: Run Web Tests
+      - name: Run Web Tests (only @web tag)
         run: xvfb-run ./gradlew clean test -Dcucumber.filter.tags="@web" --stacktrace --info
 
-      - name: Archive Web Test Reports
+      - name: Upload Web Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
