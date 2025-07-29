@@ -1,15 +1,17 @@
 name: API and Web Automation
 
 on:
-  workflow_dispatch:     # Bisa trigger manual dari tab Actions GitHub
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main           # Otomatis jalan setiap ada PR ke main
+    branches: [ "main" ]
+
 
 permissions:
-  contents: write        # Izin untuk read/write content repo
-  pages: write           # Izin untuk deploy ke GitHub Pages
-  id-token: write        # Izin untuk OIDC token (required oleh Pages action)
+  contents: write   
+  pages: write          
+  id-token: write       
 
 jobs:
   api-tests:
