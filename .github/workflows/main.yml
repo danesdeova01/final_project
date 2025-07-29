@@ -1,14 +1,15 @@
 name: API and Web Automation
 
 on:
-  workflow_dispatch:   
+  workflow_dispatch:     # Bisa trigger manual dari tab Actions GitHub
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main           # Otomatis jalan setiap ada PR ke main
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: write        # Izin untuk read/write content repo
+  pages: write           # Izin untuk deploy ke GitHub Pages
+  id-token: write        # Izin untuk OIDC token (required oleh Pages action)
 
 jobs:
   api-tests:
@@ -43,21 +44,19 @@ jobs:
       - name: Run API tests
         run: ./gradlew clean test -Dcucumber.filter.tags="@api" --stacktrace --info
 
-      - name: Archive API test results
+      - name: Archive API test reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: API Test Reports
           path: build/reports/tests/test
 
-     
       - name: Deploy API test reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: build/reports/tests/test
-
           publish_branch: gh-pages
           destination_dir: api-reports
 
@@ -75,8 +74,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Install Chrome and ChromeDriver for Selenium tests
-      - name: Setup Chrome
+      - name: Setup Chrome and ChromeDriver
         uses: browser-actions/setup-chrome@v1.7.3
         with:
           chrome-version: stable
@@ -97,10 +95,9 @@ jobs:
         run: ./gradlew build
 
       - name: Run Web tests
-   
         run: xvfb-run ./gradlew clean test -Dcucumber.filter.tags="@web" --stacktrace --info
 
-      - name: Archive Web test results
+      - name: Archive Web test reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -113,6 +110,5 @@ jobs:
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: build/reports/tests/test
-
           publish_branch: gh-pages
           destination_dir: web-reports
