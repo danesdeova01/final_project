@@ -17,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -51,7 +50,7 @@ jobs:
           name: API Test Reports
           path: build/reports/tests/test
 
-      - name: Deploy API reports to GitHub Pages
+      - name: Deploy API Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -65,8 +64,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -74,8 +72,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Setup Chrome dan ChromeDriver untuk Web Tests
-      - name: Setup Chrome
+      - name: Setup Chrome and ChromeDriver
         uses: browser-actions/setup-chrome@v1.7.3
         with:
           chrome-version: stable
@@ -92,7 +89,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build project
+      - name: Build Project
         run: ./gradlew build
 
       - name: Run Web Tests
@@ -105,7 +102,7 @@ jobs:
           name: Web Test Reports
           path: build/reports/tests/test
 
-      - name: Deploy Web reports to GitHub Pages
+      - name: Deploy Web Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
