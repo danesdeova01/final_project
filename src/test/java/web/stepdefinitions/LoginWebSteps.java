@@ -18,7 +18,7 @@ public class LoginWebSteps {
     private LoginPage loginPage;
     private WebDriverWait wait;
 
-    @Before
+    @Before("@web")
     public void setup() {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
@@ -33,7 +33,7 @@ public class LoginWebSteps {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    @After
+    @After("@web")
     public void teardown() {
         if(driver != null) driver.quit();
     }
