@@ -18,15 +18,24 @@ dependencies {
 
 test {
     useJUnit()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
     systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
 }
 
 task api(type: Test) {
     useJUnit()
     systemProperty "cucumber.filter.tags", "@api"
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 task web(type: Test) {
     useJUnit()
     systemProperty "cucumber.filter.tags", "@web"
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
