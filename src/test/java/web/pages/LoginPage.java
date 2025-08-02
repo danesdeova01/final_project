@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 public class LoginPage {
-    private final WebDriver driver;
+    WebDriver driver;
 
     @FindBy(id = "user-name")
     private WebElement usernameField;
@@ -25,26 +25,6 @@ public class LoginPage {
         PageFactory.initElements(driver, this);
     }
 
-    public WebElement getUsernameField() {
-        return usernameField;
-    }
-
-    public WebElement getPasswordField() {
-        return passwordField;
-    }
-
-    public WebElement getLoginButton() {
-        return loginButton;
-    }
-
-    public String getErrorMessage() {
-        try {
-            return errorMessage.isDisplayed() ? errorMessage.getText() : "";
-        } catch (Exception e) {
-            return "";  // Menghindari NoSuchElementException jika error message tidak muncul
-        }
-    }
-
     public void enterUsername(String username) {
         usernameField.clear();
         usernameField.sendKeys(username);
@@ -57,5 +37,9 @@ public class LoginPage {
 
     public void clickLogin() {
         loginButton.click();
+    }
+
+    public String getErrorMessage() {
+        return errorMessage.getText();
     }
 }
