@@ -77,6 +77,12 @@ jobs:
         with:
           chrome-version: stable
 
+      - name: Symlink chrome if needed
+        run: |
+          if [ ! -f /usr/bin/google-chrome ]; then
+            sudo ln -s /usr/bin/google-chrome-stable /usr/bin/google-chrome
+          fi
+
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -89,7 +95,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build Project
+      - name: Build project
         run: ./gradlew build
 
       - name: Run Web Tests
