@@ -18,24 +18,33 @@ public class LoginWebSteps {
     private LoginPage loginPage;
     private WebDriverWait wait;
 
-    @Before("@web")
+    @Before(order = 1)
     public void setup() {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--incognito");
-        driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-        loginPage = new LoginPage(driver);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebDriverManager.chromedriver().setup();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--window-size=1920,1080");
+            options.addArguments("--incognito");
+
+            driver = new ChromeDriver(options);
+            driver.manage().window().maximize();
+            loginPage = new LoginPage(driver);
+            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to initialize ChromeDriver: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    @After("@web")
+    @After(order = 1)
     public void teardown() {
-        if(driver != null) driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Given("I am on the login page")
@@ -72,7 +81,7 @@ public class LoginWebSteps {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h3[data-test='error']")));
         String errorText = loginPage.getErrorMessage();
         assertTrue(errorText.toLowerCase().contains("username and password do not match") ||
-                errorText.toLowerCase().contains("error"));
+                   errorText.toLowerCase().contains("error"));
     }
 
     @Given("I am logged in as a valid user")
@@ -94,7 +103,6 @@ public class LoginWebSteps {
     @Then("I should be redirected to the login page")
     public void i_should_be_redirected_to_the_login_page() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-name")));
-
         assertTrue(driver.getCurrentUrl().contains("saucedemo.com"));
     }
 }
