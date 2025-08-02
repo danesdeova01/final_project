@@ -14,13 +14,20 @@ public class LoginWebSteps {
     LoginPage loginPage;
 
     @Before
-    public void setUp() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-        driver = new ChromeDriver(options);
-        driver.get("https://www.saucedemo.com/");
-        loginPage = new LoginPage(driver);
-    }
+public void setUp() {
+    WebDriverManager.chromedriver().setup();
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless=old");             // gunakan mode headless lama
+    options.addArguments("--no-sandbox");
+    options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--disable-gpu");
+    options.addArguments("--window-size=1920,1080");
+    options.addArguments("--remote-allow-origins=*");
+
+    driver = new ChromeDriver(options);
+    loginPage = new LoginPage(driver);
+}
+
 
     @After
     public void tearDown() {
