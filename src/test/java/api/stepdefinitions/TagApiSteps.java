@@ -2,6 +2,7 @@ package api.stepdefinitions;
 
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
+
 import static io.restassured.RestAssured.*;
 import static org.junit.Assert.*;
 
@@ -11,7 +12,7 @@ public class TagApiSteps {
     @When("I send GET request to tag API")
     public void i_send_get_request_to_tag_api() {
         response = given()
-                .header("app-id", "63a804408eb0cb069b57e43a")  // Ganti dengan APP_ID valid kamu
+                .header("app-id", "63a804408eb0cb069b57e43a")
                 .get("https://dummyapi.io/data/v1/tag");
         assertNotNull("Response is null", response);
     }
