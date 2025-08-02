@@ -9,7 +9,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
 import web.pages.LoginPage;
 
-public class LoginSteps {
+public class LoginWebSteps {
     WebDriver driver;
     LoginPage loginPage;
 
