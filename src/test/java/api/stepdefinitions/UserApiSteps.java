@@ -3,6 +3,7 @@ package api.stepdefinitions;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
+
 import static io.restassured.RestAssured.*;
 import static org.junit.Assert.*;
 
@@ -11,19 +12,17 @@ public class UserApiSteps {
     private String userId;
     private String createdUserId;
 
-    // Ganti dengan App-ID yang valid dan aktif dari dummyapi.io
     private final String APP_ID = "63a804408eb0cb069b57e43a";
 
     // --- GET User by ID ---
 
     @Given("I have a valid user ID")
     public void i_have_a_valid_user_id() {
-        userId = "60d0fe4f5311236168a109d7";  // Gunakan user ID valid dari dummyapi.io
+        userId = "60d0fe4f5311236168a109d7";
     }
 
     @When("I send GET request to user API")
     public void i_send_get_request_to_user_api() {
-        System.out.println("[DEBUG] GET user with userId: " + userId);
         response = given()
                 .header("app-id", APP_ID)
                 .get("https://dummyapi.io/data/v1/user/" + userId);
@@ -33,8 +32,6 @@ public class UserApiSteps {
 
     @Then("the user response status should be 200")
     public void the_user_response_status_should_be_200() {
-        System.out.println("[DEBUG] Status code: " + response.getStatusCode());
-        System.out.println("[DEBUG] Response body: " + response.getBody().asString());
         assertEquals(200, response.getStatusCode());
     }
 
@@ -49,6 +46,7 @@ public class UserApiSteps {
 
     @Given("I have user data to create")
     public void i_have_user_data_to_create() {
+        // Tidak ada aksi, hanya log
         System.out.println("[DEBUG] Preparing user data for create");
     }
 
@@ -57,18 +55,17 @@ public class UserApiSteps {
         String uniqueEmail = "testuser" + System.currentTimeMillis() + "@example.com";
         String createBody = String.format(
                 "{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"%s\"}", uniqueEmail);
-        System.out.println("[DEBUG] Creating user with email: " + uniqueEmail);
 
         response = given()
                 .header("app-id", APP_ID)
                 .contentType("application/json")
                 .body(createBody)
                 .post("https://dummyapi.io/data/v1/user/create");
+
         assertNotNull(response);
         assertEquals(200, response.getStatusCode());
 
         createdUserId = response.jsonPath().getString("id");
-        System.out.println("[DEBUG] Created userId: " + createdUserId);
         assertNotNull(createdUserId);
     }
 
@@ -77,7 +74,6 @@ public class UserApiSteps {
         assertNotNull(createdUserId);
     }
 
-    // Hook untuk memastikan user sudah dibuat sebelum update atau delete
     @Before("@update or @delete")
     public void setupUserBeforeUpdateOrDelete() {
         if (createdUserId == null) {
@@ -91,28 +87,24 @@ public class UserApiSteps {
     @Given("I have an existing user ID and new data")
     public void i_have_an_existing_user_id_and_new_data() {
         userId = createdUserId;
-        System.out.println("[DEBUG] Using userId for update: " + userId);
     }
 
     @When("I send PUT request to update user")
     public void i_send_put_request_to_update_user() {
         String updateBody = "{\"firstName\":\"Updated\",\"lastName\":\"User\",\"email\":\"updateduser@example.com\"}";
 
-        System.out.println("[DEBUG] Updating user with userId: " + userId);
-
         response = given()
                 .header("app-id", APP_ID)
                 .contentType("application/json")
                 .body(updateBody)
                 .put("https://dummyapi.io/data/v1/user/" + userId);
+
         assertNotNull(response);
         assertEquals(200, response.getStatusCode());
     }
 
     @Then("the response should contain updated user data")
     public void the_response_should_contain_updated_user_data() {
-        System.out.println("[DEBUG] Update response status: " + response.getStatusCode());
-        System.out.println("[DEBUG] Update response body: " + response.getBody().asString());
         assertEquals(200, response.getStatusCode());
         assertEquals("Updated", response.jsonPath().getString("firstName"));
     }
@@ -122,23 +114,20 @@ public class UserApiSteps {
     @Given("I have an existing user ID to delete")
     public void i_have_an_existing_user_id_to_delete() {
         userId = createdUserId;
-        System.out.println("[DEBUG] Using userId for delete: " + userId);
     }
 
     @When("I send DELETE request to delete user")
     public void i_send_delete_request_to_delete_user() {
-        System.out.println("[DEBUG] Deleting user with userId: " + userId);
         response = given()
                 .header("app-id", APP_ID)
                 .delete("https://dummyapi.io/data/v1/user/" + userId);
+
         assertNotNull(response);
         assertEquals(200, response.getStatusCode());
     }
 
     @Then("the response should confirm deletion")
     public void the_response_should_confirm_deletion() {
-        System.out.println("[DEBUG] Delete response status: " + response.getStatusCode());
-        System.out.println("[DEBUG] Delete response body: " + response.getBody().asString());
         assertEquals(200, response.getStatusCode());
     }
 }
