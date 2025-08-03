@@ -41,21 +41,21 @@ jobs:
         run: ./gradlew build
 
       - name: Run API Tests
-        run: ./gradlew clean test -Dcucumber.filter.tags="@api" --stacktrace --info
+        run: ./gradlew clean apiTest --stacktrace --info
 
       - name: Upload API Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: API Test Reports
-          path: build/reports/tests/test
+          path: build/reports/api-cucumber-html-report
 
       - name: Deploy API Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/reports/tests/test
+          publish_dir: build/reports/api-cucumber-html-report
           publish_branch: gh-pages
           destination_dir: api-reports
 
@@ -99,20 +99,20 @@ jobs:
         run: ./gradlew build
 
       - name: Run Web Tests
-        run: xvfb-run ./gradlew clean test -Dcucumber.filter.tags="@web" --stacktrace --info
+        run: xvfb-run ./gradlew clean webTest --stacktrace --info
 
       - name: Upload Web Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Web Test Reports
-          path: build/reports/tests/test
+          path: build/reports/web-cucumber-html-report
 
       - name: Deploy Web Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/reports/tests/test
+          publish_dir: build/reports/web-cucumber-html-report
           publish_branch: gh-pages
           destination_dir: web-reports
