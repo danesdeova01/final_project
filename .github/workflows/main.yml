@@ -3,8 +3,9 @@ name: API and Web Automation
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - main
+    branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: write
@@ -37,27 +38,24 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build project
-        run: ./gradlew build
-
       - name: Run API Tests
-        run: ./gradlew clean apiTest --stacktrace --info
+        run: ./gradlew clean test -Dcucumber.filter.tags="@api" --stacktrace --info
 
       - name: Upload API Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: API Test Reports
-          path: build/reports/api-cucumber-html-report
-
+          path: build/reports/tests/test
+          
       - name: Deploy API Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/reports/api-cucumber-html-report
+          publish_dir: build/reports/tests/test
           publish_branch: gh-pages
-          destination_dir: api-reports
+          destination_dir: api-test
 
   web-tests:
     name: Run Web Tests (@web)
@@ -95,24 +93,21 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build project
-        run: ./gradlew build
-
       - name: Run Web Tests
-        run: xvfb-run ./gradlew clean webTest --stacktrace --info
+        run: xvfb-run ./gradlew clean test -Dcucumber.filter.tags="@web" --stacktrace --info
 
       - name: Upload Web Test Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Web Test Reports
-          path: build/reports/web-cucumber-html-report
+          path: build/reports/tests/test
 
       - name: Deploy Web Reports to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/reports/web-cucumber-html-report
+          publish_dir: build/reports/tests/test
           publish_branch: gh-pages
-          destination_dir: web-reports
+          destination_dir: web-test
