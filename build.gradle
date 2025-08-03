@@ -24,18 +24,27 @@ test {
     systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
 }
 
-task api(type: Test) {
-    useJUnit()
+tasks.register('apiTest', Test) {
+    description = "Run API tests"
+    group = "verification"
+
+    // Jalankan ApiTestRunner saja
+    include '**/ApiTestRunner.class'
+
+    useJUnitPlatform()
+
     systemProperty "cucumber.filter.tags", "@api"
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
 
-task web(type: Test) {
-    useJUnit()
+tasks.register('webTest', Test) {
+    description = "Run Web (UI) tests"
+    group = "verification"
+
+    // Jalankan WebTestRunner saja
+    include '**/WebTestRunner.class'
+
+    useJUnitPlatform()
+
     systemProperty "cucumber.filter.tags", "@web"
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
+
