@@ -79,10 +79,32 @@ public class LoginWebSteps {
     }
 
     @When("I click logout button")
-    public void iClickLogoutButton() {
-        loginPage.clickMenuButton();
-        loginPage.clickLogout();
+public void i_click_logout_button() {
+    // Klik hamburger/menu terlebih dahulu
+    WebElement menuBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("react-burger-menu-btn")));
+    menuBtn.click();
+
+    // Tambahan: Tunggu sidebar benar-benar muncul (ada animasi open)
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout_sidebar_link")));
+
+    // Tunggu sampai logout benar-benar clickable (dan visible)
+    WebElement logoutBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("logout_sidebar_link")));
+
+    // Solusi ekstra: Scroll ke element (kadang butuh di CI environment/headless)
+    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", logoutBtn);
+
+    // Solusi ekstra: Pause sangat singkat jika animasi/menu belum stabil (opsional)
+    try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+
+    // Coba klik dengan actions jika masih error
+    try {
+        logoutBtn.click();
+    } catch (ElementNotInteractableException e) {
+        // Last resort: call click via JS
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", logoutBtn);
     }
+}
+
 
     @Then("I should be redirected to the login page")
     public void iShouldBeRedirectedToTheLoginPage() {
