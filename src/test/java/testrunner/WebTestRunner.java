@@ -6,8 +6,8 @@ import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "src/test/java/web/features",            
-        glue = "web.stepdefinitions",                      
+        features = "src/test/java/web/features",
+        glue = "web.stepdefinitions",
         plugin = {
                 "pretty",
                 "json:build/reports/web-cucumber-report.json",
