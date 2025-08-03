@@ -54,13 +54,13 @@ public class LoginPage {
     }
 
     public void clickLogout() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    WebElement logoutBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout_sidebar_link")));
-    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", logoutBtn);
-    try {
-        logoutBtn.click();
-    } catch (ElementNotInteractableException e) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", logoutBtn);
+
+        // Tunggu beberapa saat jika perlu agar menu muncul
+        try {
+            Thread.sleep(500); // opsional, bisa diganti dengan WebDriverWait
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        logoutLink.click();
     }
 }
-
