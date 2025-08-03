@@ -1,66 +1,91 @@
-package web.pages;
+package web.stepdefinitions;
 
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.*;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import web.pages.LoginPage;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class LoginPage {
+public class LoginWebSteps {
     WebDriver driver;
+    LoginPage loginPage;
 
-    @FindBy(id = "user-name")
-    private WebElement usernameField;
+    @Before
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new"); // gunakan mode headless baru (atau ganti dengan `--headless=chrome` untuk versi stabil)
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--remote-allow-origins=*");
 
-    @FindBy(id = "password")
-    private WebElement passwordField;
-
-    @FindBy(id = "login-button")
-    private WebElement loginButton;
-
-    @FindBy(css = "h3[data-test='error']")
-    private WebElement errorMessage;
-
-    @FindBy(id = "react-burger-menu-btn")
-    private WebElement menuButton;
-
-    @FindBy(id = "logout_sidebar_link")
-    private WebElement logoutLink;
-
-    public LoginPage(WebDriver driver) {
-        this.driver = driver;
-        PageFactory.initElements(driver, this);
+        driver = new ChromeDriver(options);
+        loginPage = new LoginPage(driver);
+        driver.get("https://www.saucedemo.com/"); // penting: buka halaman login di awal
     }
 
-    public void enterUsername(String username) {
-        usernameField.clear();
-        usernameField.sendKeys(username);
-    }
-
-    public void enterPassword(String password) {
-        passwordField.clear();
-        passwordField.sendKeys(password);
-    }
-
-    public void clickLogin() {
-        loginButton.click();
-    }
-
-    public String getErrorMessage() {
-        return errorMessage.getText();
-    }
-
-    public void clickMenuButton() {
-        menuButton.click();
-    }
-
-    public void clickLogout() {
-
-        // Tunggu beberapa saat jika perlu agar menu muncul
-        try {
-            Thread.sleep(500); // opsional, bisa diganti dengan WebDriverWait
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
         }
-        logoutLink.click();
+    }
+
+    // ========= Step Definitions =========
+
+    @Given("I am on the login page")
+    public void iAmOnTheLoginPage() {
+        Assert.assertTrue(driver.getCurrentUrl().contains("saucedemo.com"));
+    }
+
+    @When("I enter valid username and password")
+    public void iEnterValidUsernameAndPassword() {
+        loginPage.enterUsername("standard_user");
+        loginPage.enterPassword("secret_sauce");
+        loginPage.clickLogin();
+    }
+
+    @Then("I should see the products page")
+    public void iShouldSeeTheProductsPage() {
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+    }
+
+    @When("I enter invalid username and password")
+    public void iEnterInvalidUsernameAndPassword() {
+        loginPage.enterUsername("invalid_user");
+        loginPage.enterPassword("wrong_pass");
+        loginPage.clickLogin();
+    }
+
+    @Then("I should see an error message")
+    public void iShouldSeeAnErrorMessage() {
+        String actualMessage = loginPage.getErrorMessage();
+        Assert.assertTrue(actualMessage.contains("Username and password do not match")
+                || actualMessage.contains("Epic sadface"));
+    }
+
+    @Given("I am logged in as a valid user")
+    public void iAmLoggedInAsAValidUser() {
+        loginPage.enterUsername("standard_user");
+        loginPage.enterPassword("secret_sauce");
+        loginPage.clickLogin();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+    }
+
+    @When("I click logout button")
+    public void iClickLogoutButton() {
+        loginPage.clickMenuButton();
+        loginPage.clickLogout();
+    }
+
+    @Then("I should be redirected to the login page")
+    public void iShouldBeRedirectedToTheLoginPage() {
+        Assert.assertTrue(driver.getCurrentUrl().contains("saucedemo.com"));
     }
 }
